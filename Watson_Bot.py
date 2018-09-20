@@ -14,7 +14,7 @@ def login():
                     password = config.password,
                     client_id = config.client_id,
                     client_secret = config.client_secret,
-                    user_agent = "LYKABAU5's first bot")
+                    user_agent = "Watson_Bot")
     print("Logged in!") 
     return r
 
