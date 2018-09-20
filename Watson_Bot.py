@@ -7,8 +7,6 @@ import time
 import io
 import operator
 
-#from string_builder import StringBuilder
-
 def login():
     print(os.listdir('.')) # DELETE
     print("Attempting to log in")
@@ -23,10 +21,10 @@ def login():
 
 def run(r, replied_comments):
     print("Fetching comments")
-    for comment in r.subreddit('test').comments(limit=100): #/r/all 
+    for comment in r.subreddit('test').comments(limit=20): #/r/all 
         if "watsonbot" in comment.body and comment.id not in replied_comments: #and comment.author != r.user.me()
 
-            #watsonbot LYKABAU5 50 verbose
+            #watsonbot USERNAME 50 verbose
 
             print("Bot summoned by: " + str(comment.author))
             summon_commands = comment.body.split()
@@ -56,21 +54,25 @@ def run(r, replied_comments):
                 pass
 
             print("Writing target_history.txt ...")
-            target_file = open("target_history.txt", "wb")
-            for target_comment in target.comments.new(limit = size): 
-                target_file.write(target_comment.body.encode('utf-8'))
-                target_file.write("\n".encode('utf-8'))
-            target_file.close()
+            try: 
+                target_file = open("target_history.txt", "wb")
+                for target_comment in target.comments.new(limit = size): 
+                    target_file.write(target_comment.body.encode('utf-8'))
+                    target_file.write("\n".encode('utf-8'))
+                target_file.close()
 
-            print("Calling Watson method")
-            call_Watson(verbose)
+                print("Calling Watson method")
+                call_Watson(verbose)
+            except:
+                print("Something went wrong...")
+                pass
 
             try: 
                 output = open("target_results.txt", "r")
-                #comment.reply(output.read())
+                comment.reply(output.read())
                 print("SUCCESS!!!\n")
             except:
-                print("Something went wrong with Watson method\n")
+                print("Comment not made\n")
                 pass
             
             replied_comments.append(comment.id)
@@ -140,8 +142,8 @@ def call_Watson(verbose):
             for children in big5['children']:
                 results_dictionary[str(children['name'])] = float(children['percentile'])
         
-        for key in results_dictionary:
-            print(str(key) + " : " + str(results_dictionary.get(key)))
+        #for key in results_dictionary:
+        #    print(str(key) + " : " + str(results_dictionary.get(key)))
         
         print()
         print()
@@ -151,6 +153,7 @@ def call_Watson(verbose):
         for key in sorted_dict:
             if (count < 3 or count >= last_three):
                 print("key: " + str(key[0]) + " value: " + str(key[1]))
+                target_results.write(str(key[0]) + " : " + str(key[1]) + "\n\n")
             count+=1
         #Don't print, write!
     target_results.close()
